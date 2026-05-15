@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Voting Digital</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/a/a0/Lambang_Kabupaten_Aceh_Timur.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
+        /* Custom Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .animate-slideInLeft {
+            animation: slideInLeft 0.5s ease forwards;
+        }
+
+        .animate-slideInRight {
+            animation: slideInRight 0.5s ease forwards;
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-pulse-hover:hover {
+            animation: pulse 0.8s ease infinite;
+        }
+
+        /* Glassmorphism Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .glass-dark {
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #5a67d8, #6b46c1);
+        }
+
+        /* Gradient Backgrounds */
+        .gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .gradient-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .gradient-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .gradient-dark {
+            background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+        }
+
+        .gradient-accent {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        /* Card Effects */
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Enhanced Sidebar */
+        .sidebar {
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 50%, #312e81 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .sidebar-item {
+            position: relative;
+            overflow: hidden;
+            margin: 0 12px 8px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover::before {
+            opacity: 1;
+        }
+
+        .sidebar-item.active {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-item.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #fbbf24, #f59e0b);
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
+        }
+
+        /* Loading Animation */
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Enhanced Stats Cards */
+        .stats-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            transition: all 0.4s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+        }
+
+        /* Candidate Cards */
+        .candidate-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .candidate-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .candidate-card:hover::before {
+            opacity: 1;
+        }
+
+        .candidate-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Chart styling */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        /* Table styling */
+        .table-row {
+            transition: all 0.2s ease;
+        }
+
+        .table-row:hover {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+            transform: scale(1.01);
+        }
+
+        /* Progress bars */
+        .progress-bar {
+            background: linear-gradient(90deg, #e5e7eb, #f3f4f6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transform: translateX(-100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-slate-50 to-blue-50" x-data="votingApp()" x-init="init()">
+
+    <div x-show="loading" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" x-cloak>
+        <div class="glass rounded-3xl p-10 flex flex-col items-center space-y-6 animate-pulse">
+            <div class="loader"></div>
+            <div class="text-white font-semibold text-lg">Memproses...</div>
+            <div class="w-32 h-1 bg-white bg-opacity-20 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-full animate-pulse"></div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="currentPage === 'landing'" class="min-h-screen gradient-primary flex flex-col relative overflow-hidden"
+        x-cloak>
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-4 -right-4 w-72 h-72 bg-white bg-opacity-10 rounded-full animate-float"></div>
+            <div class="absolute top-1/2 -left-8 w-48 h-48 bg-white bg-opacity-5 rounded-full animate-float"
+                style="animation-delay: -1s"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-32 h-32 bg-white bg-opacity-10 rounded-full animate-float"
+                style="animation-delay: -2s"></div>
+        </div>
+
+        <div class="container mx-auto px-6 py-12 flex-grow flex flex-col justify-center relative z-10">
+		
+			
+            <div class="text-center text-white mb-16 animate-fadeIn">
+			
+			<div class="w-24 h-24 bg-gradient-to-br from-white/20 to-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-float">
+			 <img src="https://upload.wikimedia.org/wikipedia/commons/a/a0/Lambang_Kabupaten_Aceh_Timur.png" alt="Deskripsi Gambar" width="80" height="50">
+		    </div>
+			
+                <h1
+                    class="text-5xl md:text-6xl font-black mb-6 drop-shadow-1xl bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                    DPMPTSP
+                </h1>
+				<h1
+                    class="text-4xl md:text-4xl font-black mb-6 drop-shadow-2xl bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+					KABUPATEN ACEH TIMUR
+                </h1>
+                <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light leading-relaxed">
+                    Portal Aplikasi Administrasi Perkantoran pada Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu Kabupaten Aceh Timur
+                </p>
+            </div>
+
+            <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 mb-16">
+                <div class="glass rounded-3xl p-8 text-center text-white card-hover animate-slideInLeft"
+                    style="animation-delay: 0.2s">
+                    <a href="https://dpmptsp-atim.github.io/siasu" target="_blank">
+                    <div
+                        class="w-24 h-24 bg-gradient-to-br from-white/20 to-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-float">
+                        <i data-lucide="mail" class="w-12 h-12"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Sitem Agenda Surat</h3>
+                    <p class="opacity-80 leading-relaxed"><b>SiASU - Sitem Agenda Surat</b><br>Adalah Sitem Agenda Surat Masuk dan Surat Keluar</p>
+                    </a>
+                </div>
+
+                <div class="glass rounded-3xl p-8 text-center text-white card-hover animate-fadeIn"
+                    style="animation-delay: 0.4s">
+                    <a href="https://dpmptsp-atim.github.io/st" target="_blank">
+                    <div class="w-24 h-24 bg-gradient-to-br from-white/20 to-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-float"
+                        style="animation-delay: -1s">
+                        <i data-lucide="send" class="w-12 h-12"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">ST & SPPD</h3>
+                    <p class="opacity-80 leading-relaxed">Sistem untuk pembuatan Surat Tugas (ST) dan Surat Perintah Perjalanan Dinas (SPPD)</p>
+                    </a>
+                </div>
+
+                <div class="glass rounded-3xl p-8 text-center text-white card-hover animate-slideInRight"
+                    style="animation-delay: 0.6s">
+                    <a href="https://dpmptsp-atim.github.io/voting" target="_blank">
+                    <div class="w-24 h-24 bg-gradient-to-br from-white/20 to-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-float"
+                        style="animation-delay: -2s">
+                        <i data-lucide="vote" class="w-12 h-12"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Sistem Voting</h3>
+                    <p class="opacity-80 leading-relaxed">Sistem Voting</p>
+                    </a>
+                </div>
+            </div>
+
+            
+        </div>
+
+        <footer class="py-8 text-center text-white text-opacity-70 relative z-10">
+            <p class="text-lg font-light">© <span x-text="new Date().getFullYear()"></span> DPMPTSP
+                Kabupaten Aceh Timur.</p>
+        </footer>
+    </div>
+
+    
+    <script>
+        function votingApp() {
+            return {
+                currentPage: 'landing',
+                activeSection: 'dashboard',
+                isSidebarOpen: false,
+                loading: false,
+                loginError: '',
+                showAddCandidate: false,
+
+                // STATE BARU UNTUK FITUR EDIT
+                showEditCandidate: false, // Mengontrol visibilitas modal edit
+                editCandidateForm: { // Menampung data kandidat yang sedang diedit
+                    id: null,
+                    nama: '',
+                    deskripsi: '',
+                    foto: ''
+                },
+
+                // State untuk kelola pengguna
+                showAddUser: false,
+                showEditUser: false,
+                userForm: {
+                    email: '',
+                    password: '',
+                    role: 'voter'
+                },
+                editUserForm: {
+                    originalEmail: '', // [PENTING] Menyimpan email asli untuk pencarian
+                    email: '',
+                    role: '',
+                    newPassword: ''
+                },
+
+                // [BARU] State untuk modal ganti password
+                showChangePasswordModal: false,
+                changePasswordForm: {
+                    current: '',
+                    new: '',
+                    confirm: ''
+                },
+
+                isUploading: false,
+                uploadProgress: 0,
+                uploadFileName: '',
+                user: {
+                    email: '',
+                    role: ''
+                },
+
+                loginForm: {
+                    email: '',
+                    password: ''
+                },
+                candidateForm: {
+                    nama: '',
+                    deskripsi: '',
+                    foto: ''
+                },
+                candidates: [],
+                votes: [],
+                users: [],
+                userHasVoted: false,
+                votingResults: [],
+
+                pieChartStyle() {
+                    if (this.votes.length === 0) {
+                        return { background: '#f3f4f6' }; // Warna abu-abu jika tidak ada suara
+                    }
+                    const colors = ['#22c55e', '#3b82f6', '#8b5cf6', '#6b7280', '#ec4899'];
+                    let cumulativePercent = 0;
+                    const gradientStops = this.votingResults.map((result, index) => {
+                        const stop = `${colors[index % colors.length]} ${cumulativePercent}% ${cumulativePercent + result.percentage}%`;
+                        cumulativePercent += result.percentage;
+                        return stop;
+                    }).join(', ');
+                    return { background: `conic-gradient(${gradientStops})` };
+                },
+
+                callApi(functionName, ...args) {
+                    this.loading = true;
+                    return new Promise((resolve, reject) => {
+                        google.script.run
+                            .withSuccessHandler(response => {
+                                this.loading = false;
+
+                                if (response && response.success === false) {
+                                    console.error('Server-side operation failed:', response.message);
+                                    Swal.fire('Error', response.message, 'error');
+                                    reject(new Error(response.message));
+                                } else {
+                                    resolve(response);
+                                }
+                            })
+                            .withFailureHandler(error => {
+                                this.loading = false;
+                                console.error('Google Script Run Error:', error);
+                                Swal.fire('Error Kritis', `Terjadi kesalahan komunikasi dengan server: ${error.message}`, 'error');
+                                if (this.currentPage === 'dashboard') this.logout();
+                                reject(error);
+                            })[functionName](...args);
+                    });
+                },
+
+                formatDate(date) {
+                    if (!date) return '-';
+                    const options = {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    };
+                    return new Date(date).toLocaleDateString('id-ID', options);
+                },
+
+                formatTimeAgo(date) {
+                    if (!date) return '-';
+                    const now = new Date();
+                    const diffMs = now - new Date(date);
+                    const diffMins = Math.floor(diffMs / 60000);
+                    const diffHours = Math.floor(diffMs / 3600000);
+                    const diffDays = Math.floor(diffMs / 86400000);
+                    if (diffMins < 1) return 'Baru saja';
+                    if (diffMins < 60) return `${diffMins} menit lalu`;
+                    if (diffHours < 24) return `${diffHours} jam lalu`;
+                    return `${diffDays} hari lalu`;
+                },
+
+                async loadAllData() {
+                    try {
+                        const [candidatesResult, votesResult, usersResult] = await Promise.all([
+                            this.callApi('getCandidates'),
+                            this.callApi('getVotes'),
+                            this.callApi('getUsers')
+                        ]);
+                        this.candidates = candidatesResult.data || [];
+                        this.votes = votesResult.data || [];
+                        this.users = usersResult.data || [];
+                        this.checkUserVoted();
+                        this.calculateResults();
+                        this.$nextTick(() => {
+                            lucide.createIcons();
+                        });
+                    } catch (error) {
+                        console.error("Gagal memuat semua data:", error);
+                    }
+                },
+
+
+                async login() {
+                    this.loginError = '';
+                    try {
+                        const result = await this.callApi('handleLogin', this.loginForm.email, this.loginForm.password);
+                        if (result.success) {
+                            this.user = result.user;
+                            localStorage.setItem('votingUser', JSON.stringify(this.user));
+                            this.currentPage = 'dashboard';
+                            await this.loadAllData();
+                        } else {
+                            this.loginError = result.message || 'User Name atau password salah!';
+
+                        }
+                    } catch (error) {
+                        this.loginError = error.message;
+                    }
+                },
+
+                logout() {
+                    localStorage.removeItem('votingUser');
+                    this.user = {
+                        email: '',
+                        role: ''
+                    };
+                    this.currentPage = 'landing';
+                    this.activeSection = 'dashboard';
+                    this.loginForm = {
+                        email: '',
+                        password: ''
+                    };
+                    this.userHasVoted = false;
+                    this.candidates = [];
+                    this.votes = [];
+                    this.users = [];
+                },
+
+                checkUserVoted() {
+                    this.userHasVoted = this.votes.some(vote => vote.email === this.user.email);
+                },
+
+                async vote(candidateId) {
+                    if (this.userHasVoted) {
+                        Swal.fire('Sudah Memilih', 'Anda sudah melakukan voting sebelumnya!', 'info');
+                        return;
+                    }
+
+                    Swal.fire({
+                        title: 'Konfirmasi Pilihan Anda',
+                        html: "Pilihan Anda akan direkam secara permanen dan <strong>tidak dapat diubah</strong>. Lanjutkan?",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#667eea',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, Saya Yakin!',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const voteResult = await this.callApi('submitVote', this.user.email, candidateId);
+                                if (voteResult.success) {
+                                    const votesResult =
+                                        await this.callApi('getVotes');
+                                    this.votes = votesResult.data;
+                                    this.checkUserVoted();
+                                    this.calculateResults();
+                                    Swal.fire(
+                                        'Voting Berhasil!',
+                                        'Terima kasih atas partisipasi Anda dalam pemilihan ini.',
+                                        'success'
+                                    );
+                                }
+                            } catch (error) {
+                                // Error sudah ditangani di callApi
+                            }
+                        }
+                    });
+                },
+
+                handleFileUpload(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    this.uploadFileName = file.name;
+                    this.isUploading = true;
+                    this.uploadProgress = 0;
+                    const interval = setInterval(() => {
+                        if (this.uploadProgress < 100) {
+                            this.uploadProgress += 10;
+                        } else {
+                            clearInterval(interval);
+                        }
+                    }, 50);
+                },
+
+                closeAddCandidateModal() {
+                    this.showAddCandidate = false;
+                    this.candidateForm = {
+                        nama: '',
+                        deskripsi: '',
+                        foto: ''
+                    };
+                    document.getElementById('foto-upload').value = '';
+                    this.isUploading = false;
+                    this.uploadProgress = 0;
+                    this.uploadFileName = '';
+                },
+
+                openEditModal(candidate) {
+                    this.editCandidateForm = { ...candidate
+                    };
+                    this.showEditCandidate = true;
+                },
+
+                closeEditCandidateModal() {
+                    this.showEditCandidate = false;
+                    this.editCandidateForm = {
+                        id: null,
+                        nama: '',
+                        deskripsi: '',
+                        foto: ''
+                    };
+                },
+
+                async updateCandidate() {
+                    if (!this.editCandidateForm.nama.trim() || !this.editCandidateForm.deskripsi.trim()) {
+                        Swal.fire('Data Tidak Lengkap', 'Nama dan Deskripsi tidak boleh kosong.', 'error');
+                        return;
+                    }
+                    try {
+                        const result = await this.callApi('updateCandidate', this.editCandidateForm);
+                        if (result.success) {
+                            await this.loadAllData();
+                            this.closeEditCandidateModal();
+                            Swal.fire('Berhasil!', 'Data kandidat telah diperbarui.', 'success');
+                        }
+                    } catch (error) {
+                        // Error sudah ditangani oleh fungsi callApi
+                    }
+                },
+
+                async addCandidate() {
+                    if (!this.candidateForm.nama.trim() || !this.candidateForm.deskripsi.trim()) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Data Tidak Lengkap',
+                            text: 'Mohon pastikan Nama dan Deskripsi Kandidat telah diisi dengan benar.',
+                            confirmButtonColor: '#764ba2'
+                        });
+                        return;
+                    }
+
+                    const fileInput = document.getElementById('foto-upload');
+                    const file = fileInput.files[0];
+                    let fileData = null;
+
+                    const processAndSend = async (fileDataPayload) => {
+                        try {
+                            const result = await this.callApi('addCandidate', this.candidateForm.nama, this.candidateForm.deskripsi, fileDataPayload);
+                            if (result.success) {
+                                const candidatesResult = await this.callApi('getCandidates');
+                                this.candidates = candidatesResult.data;
+                                this.closeAddCandidateModal();
+                                this.calculateResults();
+                                Swal.fire('Berhasil', 'Kandidat baru berhasil ditambahkan!', 'success');
+                            }
+                        } catch (error) {
+                            // Error sudah ditangani di callApi
+                        }
+                    };
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const base64Data = e.target.result.split(',')[1];
+                            fileData = {
+                                base64Data: base64Data,
+                                mimeType: file.type,
+                                fileName: file.name
+                            };
+                            processAndSend(fileData);
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        processAndSend(null);
+                    }
+                },
+
+                async deleteCandidate(candidateId) {
+                    const candidate = this.candidates.find(c => c.id === candidateId);
+                    if (!candidate) return;
+
+                    Swal.fire({
+                        title: 'Anda Yakin?',
+                        html: `Anda akan menghapus kandidat <strong>${candidate.nama}</strong>. <br><br> Tindakan ini akan menghapus semua suara terkait dan tidak dapat dibatalkan.`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#e11d48',
+                        cancelButtonColor: '#3b82f6',
+                        confirmButtonText: 'Ya, Hapus Saja!',
+                        cancelButtonText: 'Jangan, Batalkan'
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const deleteResult = await
+                                this.callApi('deleteCandidate', candidateId);
+
+                                if (deleteResult.success) {
+                                    await this.loadAllData();
+                                    Swal.fire(
+                                        'Terhapus!',
+                                        `Kandidat ${candidate.nama} berhasil dihapus.`,
+                                        'success'
+                                    );
+                                }
+                            } catch (error) {
+                                // Error sudah ditangani di callApi
+                            }
+                        }
+                    });
+                },
+
+                // Fungsi untuk Kelola Pengguna
+                openAddUserModal() {
+                    this.showAddUser = true;
+                },
+                closeAddUserModal() {
+                    this.showAddUser = false;
+                    this.userForm = {
+                        email: '',
+                        password: '',
+                        role: 'voter'
+                    };
+                },
+                async addUser() {
+                    if (!this.userForm.email.trim() || !this.userForm.password.trim()) {
+                        Swal.fire('Data Tidak Lengkap', 'User Name dan Password wajib diisi.', 'error');
+                        return;
+                    }
+                    try {
+                        const result = await this.callApi('addUser', this.userForm.email, this.userForm.password, this.userForm.role);
+                        if (result.success) {
+                            await this.loadAllData();
+                            this.closeAddUserModal();
+                            Swal.fire('Berhasil!', 'Pengguna baru telah ditambahkan.', 'success');
+                        }
+                    } catch (error) { /* Ditangani oleh callApi */ }
+                },
+                openEditUserModal(userToEdit) {
+                    this.editUserForm.originalEmail = userToEdit.email; // Simpan email asli
+                    this.editUserForm.email = userToEdit.email;
+                    this.editUserForm.role = userToEdit.role;
+                    this.editUserForm.newPassword = '';
+                    this.showEditUser = true;
+                },
+                closeEditUserModal() {
+                    this.showEditUser = false;
+                },
+                async updateUser() {
+                    try {
+                        // PERUBAHAN: Kirim objek `editUserForm` secara keseluruhan
+                        const result = await this.callApi('updateUser', this.editUserForm);
+                        if (result.success) {
+                            // Jika admin mengedit akunnya sendiri, update sesi lokal
+                            if (this.editUserForm.originalEmail === this.user.email) {
+                                this.user.email = this.editUserForm.email;
+                                localStorage.setItem('votingUser', JSON.stringify(this.user));
+                            }
+                            await this.loadAllData();
+                            this.closeEditUserModal();
+                            Swal.fire('Berhasil!', 'Data pengguna telah diperbarui.', 'success');
+                        }
+                    } catch (error) { /* Ditangani oleh callApi */ }
+                },
+                deleteUser(email) {
+                    if (email === this.user.email) {
+                        Swal.fire('Aksi Ditolak', 'Anda tidak dapat menghapus akun Anda sendiri.', 'error');
+                        return;
+                    }
+                    Swal.fire({
+                        title: 'Hapus Pengguna Ini?',
+                        html: `Anda akan menghapus <strong>${email}</strong>. <br><br> Semua data voting terkait pengguna ini juga akan dihapus.`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#e11d48',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const deleteResult = await this.callApi('deleteUser', email);
+                                if (deleteResult.success) {
+                                    await this.loadAllData();
+                                    Swal.fire('Terhapus!', `Pengguna ${email} telah dihapus.`, 'success');
+                                }
+                            } catch (error) { /* Ditangani oleh callApi */ }
+                        }
+                    });
+                },
+
+                // [BARU] Fungsi untuk Ganti Password
+                openChangePasswordModal() {
+                    this.changePasswordForm = {
+                        current: '',
+                        new: '',
+                        confirm: ''
+                    };
+                    this.showChangePasswordModal = true;
+                },
+                closeChangePasswordModal() {
+                    this.showChangePasswordModal = false;
+                },
+                async changePassword() {
+                    if (!this.changePasswordForm.current || !this.changePasswordForm.new) {
+                        Swal.fire('Data Tidak Lengkap', 'Semua field wajib diisi.', 'warning');
+                        return;
+                    }
+                    if (this.changePasswordForm.new !== this.changePasswordForm.confirm) {
+                        Swal.fire('Password Tidak Cocok', 'Password baru dan konfirmasi tidak sama.', 'error');
+                        return;
+                    }
+
+                    try {
+                        const result = await this.callApi('changePassword', this.user.email, this.changePasswordForm.current, this.changePasswordForm.new);
+                        if (result.success) {
+                            this.closeChangePasswordModal();
+                            Swal.fire('Berhasil!', 'Password Anda telah berhasil diubah.', 'success');
+                        }
+                    } catch (error) {
+                        // error sudah ditangani callApi
+                    }
+                },
+
+                // [FUNGSI BARU] Untuk mengirim password saat ini ke email
+                async forgotCurrentPassword() {
+                    Swal.fire({
+                        title: 'Kirim Password ke Email?',
+                        html: `Kami akan mengirimkan password Anda saat ini ke email <strong>${this.user.email}</strong>. Lanjutkan?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#667eea',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, Kirimkan!',
+                        cancelButtonText: 'Batal'
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const apiResult = await this.callApi('sendCurrentPasswordToEmail', this.user.email);
+                                if (apiResult.success) {
+                                    Swal.fire(
+                                        'Terkirim!',
+                                        'Password Anda telah dikirim. Silakan periksa kotak masuk email Anda.',
+                                        'success'
+                                    );
+                                }
+                                // Jika gagal, error akan ditangani oleh callApi
+                            } catch (error) {
+                                // Error sudah ditangani
+                            }
+                        }
+                    });
+                },
+
+                showSuccessReset() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Semua Data Voting Telah Direset',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        toast: true
+                    });
+                },
+
+                async resetVotes() {
+                    Swal.fire({
+                        title: 'RESET SEMUA DATA VOTING?',
+                        html: "Tindakan ini bersifat <strong>permanen</strong> dan akan menghapus semua rekam jejak suara. <br><br> Masukan <strong>PIN ADMIN</strong> di bawah untuk konfirmasi.",
+                        icon: 'warning',
+                        input: 'password',
+                        inputPlaceholder: 'Masukan PIN ADMIN di sini',
+                        inputAttributes: {
+                            autocapitalize: 'off',
+                            autocorrect: 'off'
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Lanjutkan Reset',
+                        confirmButtonColor: '#e11d48',
+                        cancelButtonText: 'Batalkan',
+                        showLoaderOnConfirm: true,
+                        preConfirm: (inputValue) => {
+                            if (inputValue !== '270113') {      //PIN ADMIN
+                                Swal.showValidationMessage(
+                                    'Konfirmasi salah! Masukan "PIN ADMIN" dengan benar.'
+                                );
+                                return false;
+                            }
+                            return inputValue;
+                        },
+                        allowOutsideClick: () => !Swal.isLoading()
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const apiResult =
+                                    await this.callApi('resetAllVotes');
+                                if (apiResult.success) {
+                                    this.votes = [];
+                                    this.userHasVoted = false;
+                                    this.calculateResults();
+                                    this.showSuccessReset();
+                                }
+                            } catch (error) {
+                                // Error sudah ditangani di callApi
+                            }
+                        }
+                    });
+                },
+
+                calculateResults() {
+                    const results = [];
+                    const totalVotes = this.votes.length;
+                    this.candidates.forEach(candidate => {
+                        const candidateVotes = this.votes.filter(v => v.candidateId == candidate.id).length;
+                        const percentage = totalVotes > 0 ? Math.round((candidateVotes / totalVotes) * 100) : 0;
+                        results.push({
+                            id: candidate.id,
+                            nama: candidate.nama,
+                            votes: candidateVotes,
+                            percentage: percentage
+                        });
+                    });
+                    this.votingResults = results.sort((a, b) => b.votes - a.votes);
+                },
+
+                init() {
+                    try {
+                        const savedUser = localStorage.getItem('votingUser');
+                        if (savedUser) {
+                            console.log("Sesi ditemukan, mencoba login otomatis...");
+                            this.user = JSON.parse(savedUser);
+                            this.currentPage = 'dashboard';
+                            this.loadAllData();
+                        } else {
+                            console.log("Tidak ada sesi, tampilkan halaman landing.");
+                        }
+                    } catch (error) {
+                        console.error("Gagal memuat sesi dari localStorage:", error);
+                        localStorage.removeItem('votingUser');
+                    }
+
+                    lucide.createIcons();
+                    console.log("Voting App Initialized");
+                }
+            }
+        }
+    </script>
+</body>
+</html>
